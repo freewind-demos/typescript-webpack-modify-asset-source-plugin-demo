@@ -10,15 +10,15 @@ module.exports = {
     filename: 'bundle.js'
   },
   plugins: [
-    new HtmlWebpackPlugin({
-      template: "index.html",
-    }),
     new WebpackModifyAssetSourcePlugin({
       enable: true,
       assetName: 'bundle.js',
       modify: (code: string) => {
         return code.replace('$$placeholder$$', 'Hello webpack plugin')
       }
+    }),
+    new HtmlWebpackPlugin({
+      template: "index.html",
     })
   ]
 }

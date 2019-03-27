@@ -25,15 +25,13 @@ export default class WebpackModifyAssetSourcePlugin {
     if (!this.enable) {
       return;
     }
-    compiler.hooks.compilation.tap(ThisPluginName, (compilation: compilation.Compilation) => {
-      (compilation.hooks as any)['htmlWebpackPluginAfterHtmlProcessing'].tap(ThisPluginName, (pluginArgs: any) => {
-        if (compilation.assets[this.assetName]) {
-          const assetSource = compilation.assets[this.assetName].source();
-          compilation.assets[this.assetName].source = () => this.modify(assetSource);
-        } else {
-          throw new Error(`Asset not found: ${this.assetName}, available assets: ${Object.keys(compilation.assets)}`)
-        }
-      });
+    compiler.hooks.emit.tap(ThisPluginName, (compilation: compilation.Compilation) => {
+      if (compilation.assets[this.assetName]) {
+        const assetSource = compilation.assets[this.assetName].source();
+        compilation.assets[this.assetName].source = () => this.modify(assetSource);
+      } else {
+        throw new Error(`Asset not found: ${this.assetName}, available assets: ${Object.keys(compilation.assets)}`)
+      }
     });
   }
 
