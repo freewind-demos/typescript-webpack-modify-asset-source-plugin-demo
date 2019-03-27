@@ -1,0 +1,38 @@
+import {Compiler, compilation} from 'webpack';
+
+const ThisPluginName = 'WebpackModifyAssetSourcePlugin';
+
+type ModifyFn = (code: string) => string
+
+type Options = {
+  enable: boolean,
+  assetName: string,
+  modify: ModifyFn
+}
+
+export default class WebpackModifyAssetSourcePlugin {
+  private readonly enable: boolean;
+  private readonly assetName: string;
+  private readonly modify: ModifyFn;
+
+  constructor(options: Options) {
+    this.enable = options.enable;
+    this.assetName = options.assetName
+    this.modify = options.modify;
+  }
+
+  apply(compiler: Compiler) {
+    if (!this.enable) {
+      return;
+    }
+    compiler.hooks.compilation.tap(ThisPluginName, (compilation: compilation.Compilation) => {
+      (compilation.hooks as any)['htmlWebpackPluginAfterHtmlProcessing'].tap(ThisPluginName, (pluginArgs: any) => {
+        if (compilation.assets[this.assetName]) {
+          const assetSource = compilation.assets[this.assetName].source();
+          compilation.assets[this.assetName].source = () => this.modify(assetSource);
+        }
+      });
+    });
+  }
+
+}

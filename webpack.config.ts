@@ -1,6 +1,6 @@
 import path from 'path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import WebpackModifyFinalHtmlPlugin from './src/webpack-modify-final-html-plugin';
+import WebpackModifyAssetSourcePlugin from './src/webpack-modify-asset-source-plugin';
 
 module.exports = {
   mode: 'development',
@@ -13,10 +13,11 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: "index.html",
     }),
-    new WebpackModifyFinalHtmlPlugin({
+    new WebpackModifyAssetSourcePlugin({
       enable: true,
-      modify: (html, assetSources) => {
-        return html.replace('<<placeholder>>', JSON.stringify(assetSources['bundle.js']));
+      assetName: 'bundle.js',
+      modify: (code: string) => {
+        return code.replace('$$placeholder$$', 'Hello webpack plugin')
       }
     })
   ]
