@@ -30,6 +30,8 @@ export default class WebpackModifyAssetSourcePlugin {
         if (compilation.assets[this.assetName]) {
           const assetSource = compilation.assets[this.assetName].source();
           compilation.assets[this.assetName].source = () => this.modify(assetSource);
+        } else {
+          throw new Error(`Asset not found: ${this.assetName}, available assets: ${Object.keys(compilation.assets)}`)
         }
       });
     });
